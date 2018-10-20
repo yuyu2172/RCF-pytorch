@@ -76,6 +76,7 @@ def load_pretrained(model, fname, optimizer=None):
     """
     if os.path.isfile(fname):
         print("=> loading checkpoint '{}'".format(fname))
+
         checkpoint = torch.load(fname)
         model.load_state_dict(checkpoint['state_dict'])
         if optimizer is not None:
@@ -87,16 +88,54 @@ def load_pretrained(model, fname, optimizer=None):
         print("=> no checkpoint found at '{}'".format(fname))
 
 def load_vgg16pretrain(model, vggmodel='vgg16convs.mat'):
-    vgg16 = sio.loadmat(vggmodel)
-    torch_params =  model.state_dict()
-    for k in vgg16.keys():
-        name_par = k.split('-')
-        size = len(name_par)
-        if size  == 2:
-            name_space = name_par[0] + '.' + name_par[1]
-            data = np.squeeze(vgg16[k])
-            torch_params[name_space] = torch.from_numpy(data)
-    model.load_state_dict(torch_params)
+    import chainercv
+    from chainercv.links import VGG16
+    cv_model = VGG16(pretrained_model='imagenet')
+    import torch
+    model.conv1_1.weight.data[:] = torch.tensor(cv_model.conv1_1.conv.W.data[:, ::-1].copy())
+    model.conv1_1.bias.data[:] = torch.tensor(cv_model.conv1_1.conv.b.data)
+
+    model.conv1_2.weight.data[:] = torch.tensor(cv_model.conv1_2.conv.W.data)
+    model.conv1_2.bias.data[:] = torch.tensor(cv_model.conv1_2.conv.b.data)
+
+    model.conv2_1.weight.data[:] = torch.tensor(cv_model.conv2_1.conv.W.data)
+    model.conv2_1.bias.data[:] = torch.tensor(cv_model.conv2_1.conv.b.data)
+
+    model.conv2_2.weight.data[:] = torch.tensor(cv_model.conv2_2.conv.W.data)
+    model.conv2_2.bias.data[:] = torch.tensor(cv_model.conv2_2.conv.b.data)
+
+    model.conv3_1.weight.data[:] = torch.tensor(cv_model.conv3_1.conv.W.data)
+    model.conv3_1.bias.data[:] = torch.tensor(cv_model.conv3_1.conv.b.data)
+    model.conv3_2.weight.data[:] = torch.tensor(cv_model.conv3_2.conv.W.data)
+    model.conv3_2.bias.data[:] = torch.tensor(cv_model.conv3_2.conv.b.data)
+    model.conv3_3.weight.data[:] = torch.tensor(cv_model.conv3_3.conv.W.data)
+    model.conv3_3.bias.data[:] = torch.tensor(cv_model.conv3_3.conv.b.data)
+    
+    model.conv4_1.weight.data[:] = torch.tensor(cv_model.conv4_1.conv.W.data)
+    model.conv4_1.bias.data[:] = torch.tensor(cv_model.conv4_1.conv.b.data)
+    model.conv4_2.weight.data[:] = torch.tensor(cv_model.conv4_2.conv.W.data)
+    model.conv4_2.bias.data[:] = torch.tensor(cv_model.conv4_2.conv.b.data)
+    model.conv4_3.weight.data[:] = torch.tensor(cv_model.conv4_3.conv.W.data)
+    model.conv4_3.bias.data[:] = torch.tensor(cv_model.conv4_3.conv.b.data)
+
+    model.conv5_1.weight.data[:] = torch.tensor(cv_model.conv5_1.conv.W.data)
+    model.conv5_1.bias.data[:] = torch.tensor(cv_model.conv5_1.conv.b.data)
+    model.conv5_2.weight.data[:] = torch.tensor(cv_model.conv5_2.conv.W.data)
+    model.conv5_2.bias.data[:] = torch.tensor(cv_model.conv5_2.conv.b.data)
+    model.conv5_3.weight.data[:] = torch.tensor(cv_model.conv5_3.conv.W.data)
+    model.conv5_3.bias.data[:] = torch.tensor(cv_model.conv5_3.conv.b.data)
+    print('done')
+    
+    # vgg16 = sio.loadmat(vggmodel)
+    # torch_params =  model.state_dict()
+    # for k in vgg16.keys():
+    #    name_par = k.split('-')
+    #    size = len(name_par)
+    #     if size  == 2:
+    #         name_space = name_par[0] + '.' + name_par[1]
+    #         data = np.squeeze(vgg16[k])
+    #         torch_params[name_space] = torch.from_numpy(data)
+    # model.load_state_dict(torch_params)
 
 def load_vgg16pretrain_half(model, vggmodel='vgg16convs.mat'):
     vgg16 = sio.loadmat(vggmodel)
