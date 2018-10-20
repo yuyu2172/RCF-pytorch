@@ -23,6 +23,7 @@ from functions import  cross_entropy_loss_RCF, SGD_caffe
 from torch.utils.data import DataLoader, sampler
 from utils import Logger, Averagvalue, save_checkpoint, load_vgg16pretrain
 from os.path import join, split, isdir, isfile, splitext, split, abspath, dirname
+cv2.setNumThreads(0)
 
 parser = argparse.ArgumentParser(description='PyTorch Training')
 parser.add_argument('--batch_size', default=1, type=int, metavar='BT',
@@ -71,7 +72,7 @@ def main():
     test_dataset = BSDS_RCFLoader(root=args.dataset, split="test")
     train_loader = DataLoader(
         train_dataset, batch_size=args.batch_size,
-        num_workers=8, drop_last=True,shuffle=True)
+        num_workers=1, drop_last=True,shuffle=True)
     test_loader = DataLoader(
         test_dataset, batch_size=args.batch_size,
         num_workers=8, drop_last=True,shuffle=False)
